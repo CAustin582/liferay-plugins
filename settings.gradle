@@ -92,6 +92,8 @@ FileTree fileTree = fileTree(userDir) {
 	else {
 		exclude("**/build.gradle");
 	}
+
+	exclude("build.gradle");
 }
 
 fileTree.each(

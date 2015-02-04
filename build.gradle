@@ -203,7 +203,7 @@ allprojects {
 			}
 
 			String pluginFullVersion = getBuildXMLProp("plugin.full.version",
-						lpVersion + "." + moduleIncrementalVersion)
+						ant.properties["lp.version"] + "." + moduleIncrementalVersion)
 
 			Boolean osgiPlugin = false
 
