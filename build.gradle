@@ -15,32 +15,6 @@ buildscript {
 }
 
 configure(allprojects) {
-	repositories {
-		maven {
-			url "http://cdn.repository.liferay.com/nexus/content/groups/public"
-		}
-	}
-}
-
-task unzipCommonCss(type: Copy) {
-	configurations {
-		portalWeb
-	}
-
-	dependencies {
-		portalWeb([group: "com.liferay.portal", name: "portal-web", version: "7.0.0-SNAPSHOT"])
-	}
-
-	from(zipTree(configurations.portalWeb.singleFile)) {
-		include "WEB-INF/tld/**/*"
-		include "html/css/common/**/*"
-		include "html/themes/**/*"
-	}
-
-	into "$rootDir/dist"
-}
-
-configure(allprojects) {
 	Boolean osgiPlugin
 
 	Closure getBuildXmlProperty
@@ -58,6 +32,8 @@ configure(allprojects) {
 	Properties pluginPackageProperties
 
 	String pluginPackaging
+
+	task initGradle
 
 	getBuildXmlProperty = {
 		String key, String defaultValue = "" ->
@@ -91,99 +67,7 @@ configure(allprojects) {
 		return pluginSrcDir
 	}
 
-	readConfigurations = {
-
-		// bnd.bnd
-
-		bndProperties = new Properties()
-
-		File bndPropertiesFile = new File("${projectDir}/bnd.bnd")
-
-		if (bndPropertiesFile.exists()) {
-			bndProperties.load(new FileInputStream(bndPropertiesFile))
-		}
-
-		// build.xml
-
-		XmlParser xmlParser = new XmlParser()
-
-		xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
-
-		File buildXmlFile = new File("${projectDir}/build.xml")
-
-		if (buildXmlFile.exists()) {
-			buildXmlNode = xmlParser.parse(buildXmlFile)
-		}
-
-		// ivy.xml
-
-		File ivyXmlFile = new File("${projectDir}/ivy.xml")
-
-		if (ivyXmlFile.exists()) {
-			ivyXmlNode = xmlParser.parse(ivyXmlFile)
-		}
-
-		// liferay-plugin-package.properties
-
-		pluginPackageProperties = new Properties()
-
-		pluginPackagePropertiesFile = new File("${projectDir}/docroot/WEB-INF/liferay-plugin-package.properties")
-
-		if (pluginPackagePropertiesFile.exists()) {
-			pluginPackageProperties.load(new FileInputStream(pluginPackagePropertiesFile))
-		}
-	}
-
-	setModuleProperties = {
-
-		// osgiPlugin
-
-		File bndPropertiesFile = new File("${projectDir}/bnd.bnd")
-
-		osgiPlugin = bndPropertiesFile.exists()
-
-		// pluginPackaging
-
-		pluginPackaging = "war"
-
-		if ((project.parent.name == "shared") || osgiPlugin) {
-			pluginPackaging = "jar"
-		}
-
-		// version
-
-		String moduleFullVersion = pluginPackageProperties["module-full-version"]
-
-		if (moduleFullVersion != null) {
-			version = moduleFullVersion
-		}
-		else {
-			String bundleVersion = bndProperties["Bundle-Version"]
-
-			if (bundleVersion != null) {
-				version = bundleVersion
-			}
-			else {
-				String moduleIncrementalVersion = pluginPackageProperties["module-incremental-version"]
-
-				if (moduleIncrementalVersion == null) {
-					moduleIncrementalVersion = getBuildXmlProperty("plugin.version")
-				}
-
-				version = getBuildXmlProperty("plugin.full.version", ReleaseInfo.getVersion() + "." + moduleIncrementalVersion)
-			}
-		}
-	}
-
-	if (getPluginsSrcDir() == null) {
-		return;
-	}
-
-	readConfigurations()
-
-	setModuleProperties()
-
-	task initGradle << {
+	initGradle << {
 		Closure getBuildGradleDependencies
 		Closure getBuildGradleDependenciesCompile
 		Closure getBuildGradleDependenciesProvidedCompile
@@ -381,6 +265,104 @@ configure(allprojects) {
 
 		writeDependencySettingsFile()
 	}
+
+	readConfigurations = {
+
+		// bnd.bnd
+
+		bndProperties = new Properties()
+
+		File bndPropertiesFile = new File("${projectDir}/bnd.bnd")
+
+		if (bndPropertiesFile.exists()) {
+			bndProperties.load(new FileInputStream(bndPropertiesFile))
+		}
+
+		// build.xml
+
+		XmlParser xmlParser = new XmlParser()
+
+		xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+
+		File buildXmlFile = new File("${projectDir}/build.xml")
+
+		if (buildXmlFile.exists()) {
+			buildXmlNode = xmlParser.parse(buildXmlFile)
+		}
+
+		// ivy.xml
+
+		File ivyXmlFile = new File("${projectDir}/ivy.xml")
+
+		if (ivyXmlFile.exists()) {
+			ivyXmlNode = xmlParser.parse(ivyXmlFile)
+		}
+
+		// liferay-plugin-package.properties
+
+		pluginPackageProperties = new Properties()
+
+		pluginPackagePropertiesFile = new File("${projectDir}/docroot/WEB-INF/liferay-plugin-package.properties")
+
+		if (pluginPackagePropertiesFile.exists()) {
+			pluginPackageProperties.load(new FileInputStream(pluginPackagePropertiesFile))
+		}
+	}
+
+	repositories {
+		maven {
+			url "http://cdn.repository.liferay.com/nexus/content/groups/public"
+		}
+	}
+
+	setModuleProperties = {
+
+		// osgiPlugin
+
+		File bndPropertiesFile = new File("${projectDir}/bnd.bnd")
+
+		osgiPlugin = bndPropertiesFile.exists()
+
+		// pluginPackaging
+
+		pluginPackaging = "war"
+
+		if ((project.parent.name == "shared") || osgiPlugin) {
+			pluginPackaging = "jar"
+		}
+
+		// version
+
+		String moduleFullVersion = pluginPackageProperties["module-full-version"]
+
+		if (moduleFullVersion != null) {
+			version = moduleFullVersion
+		}
+		else {
+			String bundleVersion = bndProperties["Bundle-Version"]
+
+			if (bundleVersion != null) {
+				version = bundleVersion
+			}
+			else {
+				String moduleIncrementalVersion = pluginPackageProperties["module-incremental-version"]
+
+				if (moduleIncrementalVersion == null) {
+					moduleIncrementalVersion = getBuildXmlProperty("plugin.version")
+				}
+
+				version = getBuildXmlProperty("plugin.full.version", ReleaseInfo.getVersion() + "." + moduleIncrementalVersion)
+			}
+		}
+	}
+
+	if (getPluginsSrcDir() == null) {
+		return;
+	}
+
+	readConfigurations()
+
+	setModuleProperties()
 }
 
 configure(
@@ -390,14 +372,11 @@ configure(
 
 	apply plugin: "war"
 
-	task buildCss(type: JavaExec)
-	task compile
-
-	Map projectCompileDependencies = gradle.compileDependencies.find {
-		project.path == it.projectPath
-	}
-
 	dependencies {
+		ext.projectCompileDependencies = gradle.compileDependencies.find {
+			project.path == it.projectPath
+		}
+
 		if (projectCompileDependencies) {
 			projectCompileDependencies["compile"].each {
 				compile project(it)
@@ -430,6 +409,9 @@ configure(
 			[group: "org.eclipse.persistence", name: "javax.persistence", version: "2.0.0"],
 			[group: "postgresql", name: "postgresql", version: "9.2-1002.jdbc4"])
 	}
+
+	task buildCss(type: JavaExec)
+	task compile
 
 	buildCss {
 		configurations {
@@ -467,6 +449,9 @@ configure(
 		dependsOn compileJava,rootProject.unzipCommonCss
 
 		main = "com.liferay.portal.tools.SassToCssBuilder"
+
+		doFirst {
+		}
 
 		onlyIf {
 			pluginSrcDir.equals(file("${projectDir}/docroot"))
