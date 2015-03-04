@@ -434,24 +434,23 @@ configure(
 				[group: "org.jruby", name: "jruby-complete", version: "1.6.5"],
 				[group: "org.mozilla", name: "rhino", version: "1.7R4"],
 				[group: "org.springframework", name: "spring-web", version: "3.2.10.RELEASE"],
-				[group: "struts", name: "struts", version: "1.2.9"]
-			)
+				[group: "struts", name: "struts", version: "1.2.9"])
 		}
 
 		args = [
 			"sass.dir=/",
 			"sass.docroot.dir=${projectDir}/docroot",
-			"sass.portal.common.dir=${rootDir}/dist/html/css/common"
+			"sass.portal.common.dir=${rootDir}/dist/xyz123/html/css/common"
 		]
 
 		classpath = configurations.buildCssClasspath
 
 		dependsOn compileJava,rootProject.unzipCommonCss
 
-		main = "com.liferay.portal.tools.SassToCssBuilder"
-
 		doFirst {
 		}
+
+		main = "com.liferay.portal.tools.SassToCssBuilder"
 
 		onlyIf {
 			pluginSrcDir.equals(file("${projectDir}/docroot"))
