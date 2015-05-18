@@ -752,11 +752,11 @@ module.snapshot.url=${cdn.sonatype.snapshot.url}/com/liferay/${bnd.Bundle-Symbol
 				<record name="maven.deploy.log" action="start" />
 
 				<artifact:deploy file="${plugin.file}">
-					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-sources.jar" classifier="sources"/>
-					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-javadoc.zip" classifier="javadoc"/>
-					<pom refid="${plugin.name}"/>
+					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-sources.jar" classifier="sources" />
+					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-javadoc.zip" classifier="javadoc" />
+					<pom refid="${plugin.name}" />
 					<remoteRepository url="${sonatype.snapshot.url}">
-						<authentication username="${sonatype.snapshot.username}" password="${sonatype.snapshot.password}"/>
+						<authentication username="${sonatype.snapshot.username}" password="${sonatype.snapshot.password}" />
 					</remoteRepository>
 				</artifact:deploy>
 
@@ -768,11 +768,11 @@ module.snapshot.url=${cdn.sonatype.snapshot.url}/com/liferay/${bnd.Bundle-Symbol
 			</then>
 			<else>
 				<artifact:deploy file="${plugin.file}">
-					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-javadoc.zip" classifier="javadoc"/>
-					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-sources.jar" classifier="sources"/>
-					<pom refid="${plugin.name}"/>
+					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-javadoc.zip" classifier="javadoc" />
+					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-sources.jar" classifier="sources" />
+					<pom refid="${plugin.name}" />
 					<remoteRepository url="${sonatype.release.url}">
-						<authentication username="${sonatype.release.username}" password="${sonatype.release.password}"/>
+						<authentication username="${sonatype.release.username}" password="${sonatype.release.password}" />
 					</remoteRepository>
 				</artifact:deploy>
 			</else>
