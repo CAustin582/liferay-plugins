@@ -752,8 +752,8 @@ module.snapshot.url=${cdn.sonatype.snapshot.url}/com/liferay/${bnd.Bundle-Symbol
 				<record name="maven.deploy.log" action="start" />
 
 				<artifact:deploy file="${plugin.file}">
-					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-sources.jar" classifier="sources" />
 					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-javadoc.zip" classifier="javadoc" />
+					<attach file="${sdk.dir}/dist/${plugin.name}-${plugin.full.version}-sources.jar" classifier="sources" />
 					<pom refid="${plugin.name}" />
 					<remoteRepository url="${sonatype.snapshot.url}">
 						<authentication username="${sonatype.snapshot.username}" password="${sonatype.snapshot.password}" />
